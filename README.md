@@ -8,21 +8,29 @@ This guide assumes that you have followed the previous [tutorials](https://guilh
 
 ## Dataset information
 
-A map and rosbag are provided, along with some helper scripts. The bag includes:
+A map and rosbag are provided, along with some helper scripts.
+
+The initial bag is still provided, but had a synchronization issue. This has been fixed using [fix_stamps.py](scripts/fix_stamps.py).
+
+The fixed bag includes:
 
 ```bash
-rosbag info slam_easy.bag
+rosbag info fixed_slam_easy.bag
 
-topics:      /imu                              14805 msgs    : sensor_msgs/Imu
-             /odom                              3252 msgs    : nav_msgs/Odometry
-             /raspicam_node/camera_info         1814 msgs    : sensor_msgs/CameraInfo
+topics:      /imu                              14805 msgs    : sensor_msgs/Imu            
+             /odom                              3252 msgs    : nav_msgs/Odometry          
+             /raspicam_node/camera_info         1814 msgs    : sensor_msgs/CameraInfo     
              /raspicam_node/image/compressed    1811 msgs    : sensor_msgs/CompressedImage
-             /scan                               626 msgs    : sensor_msgs/LaserScan
-             /tf                               21329 msgs    : tf/tfMessage
-             /tf_static                            1 msg     : tf2_msgs/TFMessage
+             /scan                               626 msgs    : sensor_msgs/LaserScan      
+             /tf                               21329 msgs    : tf/tfMessage               
+             /tf_static                            1 msg     : tf/tfMessage
 ```
 
-Ground-truth data is provided in the `/tf` topic, as a transform `mocap -> mocap_laser_link`. Ground-truth is sampled at 60Hz and the child frame is the center of the laser of Turtlebot 3 Waffle Pi. The initial transform can be used to connect `mocap` to `map` or other fixed frames, with the provided `get_groundtruth_tf.py` script.
+Ground-truth data is provided in the `/tf` topic, as a transform `mocap -> mocap_laser_link`. Ground-truth is sampled at 60Hz and the child frame is the center of the laser of Turtlebot 3 Waffle Pi.
+
+The initial transform can be used to connect `mocap` to `odom`, `map` or other fixed frames. This can be done by executing [publish_initial_tf.sh](scripts/publish_initial_tf.sh).
+
+Images `docs/unconnected_tree.svg` and `docs/connected_tree.svg` show how the robot is setup in terms of frames, and what happens when we add the `mocap -> odom` transform. These images have been obtained with the following bash command: `rosrun tf2_tools view_frames.py`.
 
 The map was obtained using [turtlebot3_slam](http://wiki.ros.org/turtlebot3_slam) gmapping using the default parameters.
 
@@ -46,12 +54,10 @@ First, some things to know:
 3. Download the dataset (the map is already in the `data` directory, this downloads the rosbag):
     `roscd turtlebot3_datasets/scripts && bash download_dataset.sh`
 
-4. Extract the initial tf (provide the rosbag):
-    `rosrun turtlebot3_datasets get_groundtruth_tf.py`
+4. Run a static transform publisher to connect the ground-truth and robot frames (you can also add as a node to your launch file).:
+    `rosrun turtlebot3_datasets publish_initial_tf.sh odom # other frames can be used`
 
-5. Use the output from (4) to run a static transform publisher between `mocap` and your map/odom frame. Consider adding this to the launch file in step (6).
-
-6. Launch the description launch file:
+5. Launch the description launch file:
     `roslaunch turtlebot3_datasets turtlebot3_description.launch`
 
 7. Launch map server and/or other algorithms...
