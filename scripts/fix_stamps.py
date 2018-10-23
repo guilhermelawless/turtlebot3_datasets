@@ -8,7 +8,7 @@ import tf as tfros
 Use this file to fix a specific TF time stamp (did not synchronize time, only works if the time difference is constant (not a big assumption for a small datasets))
 
 The result of this script is the same bag but with header stamps instead of the recorded time of receiving each msg.
-For the 'mocap' TFs it will also remove TIME_OFFSET to the msg stamp.
+For the 'mocap' TFs it will also subtract TIME_OFFSET to the msg stamp.
 
 In case of slam_easy.bag , measured (1539703367.760256098 - 1539699406.298793935) = 3961.461462163 second offset between the robot TF and the mocap TF
 '''
