@@ -26,13 +26,17 @@ topics:      /imu                              14805 msgs    : sensor_msgs/Imu
              /tf_static                            1 msg     : tf/tfMessage
 ```
 
-Ground-truth data is provided in the `/tf` topic, as a transform `mocap -> mocap_laser_link`. Ground-truth is sampled at 60Hz and the child frame is the center of the laser of Turtlebot 3 Waffle Pi.
+The setup includes ground-truth data. This was obtained from a [motion capture system](http://welcome.isr.tecnico.ulisboa.pt/isrobonet/) at 60Hz. 5 markers were placed on the top layer of the robot, such that the center of the tracked object matched the laser scanner of the robot.
+
+The ground-truth data is provided in the `/tf` topic, as a transform `mocap -> mocap_laser_link`. To conform to [REP 105](http://www.ros.org/reps/rep-0105.html) in ROS, the initial transform was obtained at the robot's base footprint frame. The homogeneous transformation matrix at the beginning of the dataset is given by:
+
+![transform](docs/gt_transform.svg)
 
 The initial transform can be used to connect `mocap` to `odom`, `map` or other fixed frames. This can be done by executing [publish_initial_tf.sh](scripts/publish_initial_tf.sh).
 
-Images `docs/unconnected_tree.svg` and `docs/connected_tree.svg` show how the robot is setup in terms of frames, and what happens when we add the `mocap -> odom` transform. These images have been obtained with the following bash command: `rosrun tf2_tools view_frames.py`.
+Images `docs/unconnected_tree.svg` and `docs/connected_tree.svg` show the setup in terms of frames, and what happens when we add the `mocap -> odom` transform. These images have been obtained with the following bash command: `rosrun tf2_tools view_frames.py`.
 
-The map was obtained using [turtlebot3_slam](http://wiki.ros.org/turtlebot3_slam) gmapping using the default parameters.
+The map was obtained using [turtlebot3\_slam](http://wiki.ros.org/turtlebot3_slam) gmapping using the default parameters.
 
 ## Notices
 
@@ -54,7 +58,7 @@ First, some things to know:
 3. Download the dataset (the map is already in the `data` directory, this downloads the rosbag):
     `roscd turtlebot3_datasets/scripts && bash download_dataset.sh`
 
-4. Run a static transform publisher to connect the ground-truth and robot frames (you can also add as a node to your launch file).:
+4. Run a static transform publisher to connect the ground-truth and robot frames (you can also add as a node to your launch file):
     `rosrun turtlebot3_datasets publish_initial_tf.sh odom # other frames can be used`
 
 5. Launch the description launch file:
